@@ -1,0 +1,40 @@
+*, *::before, *::after {
+  -webkit-box-sizing: border-box;
+          box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  height: 100vh;
+}
+
+.App {
+  display: inline-block;
+  border: solid black 2px;
+  padding: 1.5rem;
+  margin: 4rem auto;
+}
+
+.App .output {
+  width: 400px;
+  border: solid black 2px;
+  margin-bottom: 1rem;
+  padding: 1rem;
+}
+
+.App .output h2 {
+  padding: 1rem 0;
+}
+
+.App .button-group {
+  width: 400px;
+  border: solid black 2px;
+  padding: 1rem;
+  display: -ms-grid;
+  display: grid;
+  -ms-grid-columns: (1fr)[3];
+      grid-template-columns: repeat(3, 1fr);
+  grid-auto-rows: 50px;
+}
+/*# sourceMappingURL=App.css.map */
