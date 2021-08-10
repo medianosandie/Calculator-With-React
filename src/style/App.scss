@@ -6,31 +6,56 @@
 
 body{
     height: 100vh;
+    background-image: linear-gradient(to bottom right,#035397,#5089C6);
+    font-family: 'Roboto', sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding-top: 2rem;
 }
 
 .App{
+    font-family: 'Roboto', sans-serif;
     display: inline-block;
-    border: solid black 2px;
-    padding: 1.5rem;
-    margin: 4rem auto;
-
+    // border: solid rgba(0, 0, 0, 0.233) 2px;
+    padding: 1rem;
+    margin: 2rem auto;
+    background-color: rgba(255, 255, 255, 0.335);
+    box-shadow: 3px 3px 5px rgba(255, 255, 255, 0.335);
+    color: white;
     .output{
-        width: 400px;
-        border: solid black 2px;
+        width: 100%;
+        border: solid rgba(255, 255, 255, 0.5) 2px;
         margin-bottom: 1rem;
         padding: 1rem;
 
         h2{
             padding: 1rem 0;
+            height: 60px;
         }
     }
 
     .button-group{
+        font-family: 'Roboto', sans-serif;
         width: 400px;
-        border: solid black 2px;
-        padding: 1rem;
+        // border: solid rgba(255, 255, 255, 0.5) 2px;
         display: grid;
-        grid-template-columns: repeat(3,1fr);
-        grid-auto-rows: 50px;
+        grid-template-columns: repeat(4,1fr);
+        grid-auto-rows: 75px;
+
+        button{
+            color: white;
+            cursor: pointer;
+            border-radius: 0;
+            font-weight: bold;
+            font-size: large;
+            border: solid 2px rgba(255, 255, 255, 0.486);
+            background-color: #08569a8e;
+        }
+
+        button:hover{
+            box-shadow: 0 0 5px 5px #ffffff4d;
+            background-color: #001E6C;
+        }
     }
 }

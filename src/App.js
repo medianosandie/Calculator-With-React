@@ -12,83 +12,110 @@ function App() {
 	const [temp,setTemp] = useState('');
 	const [lastElement,setLastElement] = useState('');
 	const [numberOfMissingOpeningBrackets,setNumberOfMissingOpeningBrackets] = useState(0);
+	const [containsPercentSign,setContainsPercentSign] = useState(false);
 
 	function onOperandButtonClick(event) {
-		// setOutput(prev => prev + event.target.value);
+		if(!containsEqualSign){
+			// setOutput(prev => prev + event.target.value);
 		
-		setLastElement(()=>event.target.value);
+			setLastElement(()=>event.target.value);
 
-		if(containsEqualSign){
-			onClearButtonClick();
-			setTemp(() => event.target.value);
-		}
+			if(containsEqualSign){
+				onClearButtonClick();
+				setTemp(() => event.target.value);
+			}
 
-		if(temp.includes('-')){
-			setTemp(prev => [prev.slice(0, prev.length-1), event.target.value, prev.slice(prev.length-1)].join(''));
+			if(temp.includes('-')){
+				// setTemp(prev => [prev.slice(0, prev.length-1), event.target.value, prev.slice(prev.length-1)].join(''));
+				setTemp(prev=>{
+					prev = prev.split('');
+					prev.splice(prev.indexOf('-')+1,0,event.target.value);
+					return prev.join('');
+				})
+			}
+			else{
+				setTemp(prev => prev + event.target.value);
+			}
+
+			if(temp === '0'){
+				setTemp(event.target.value);
+			}
 		}
 		else{
-			setTemp(prev => prev + event.target.value);
-		}
-
-		if(temp === '0'){
-			setTemp(event.target.value);
+			onClearButtonClick()
 		}
 	}
 
 	function onOperatorButtonClick(event) {
-		if(temp !== '' && /\d/.test(temp)){
-			setOperators(prev => [...prev, event.target.value]);
-			// setOutput(prev => prev + event.target.value);
-			setNumberOfOperators((prev)=>prev+1);
-			setLastElement(()=>event.target.value);
-
-			// setOutput((prev)=> prev + temp);
-
-			if(temp !== ''){
-				if(temp.includes('.') && isNaN(temp[temp.indexOf('.')+1])){
-					setOperands((prev)=>{
-						let str = temp.split('')
-
-						str.splice(temp.indexOf('.'),1,'')
-						console.log('dot was stripped!')
-						return [...prev,str.join('')]
-					})
+		if(!containsEqualSign){
+			if(temp !== '' && /\d/.test(temp)){
+				setOperators(prev => [...prev, event.target.value]);
+				// setOutput(prev => prev + event.target.value);
+				setNumberOfOperators((prev)=>prev+1);
+				setLastElement(()=>event.target.value);
+	
+				// setOutput((prev)=> prev + temp);
+	
+				if(temp !== ''){
+					if(temp.includes('.') && isNaN(temp[temp.indexOf('.')+1])){
+						setOperands((prev)=>{
+							let str = temp.split('')
+	
+							str.splice(temp.indexOf('.'),1,'')
+							console.log('dot was stripped!')
+							return [...prev,str.join('')]
+						})
+					}
+					else{
+						setOperands((prev)=>[...prev,temp]);
+					}
 				}
-				else{
-					setOperands((prev)=>[...prev,temp]);
-				}
+			}
+			else{
+				console.log('masukkan angka terlebih dahulu untuk melakukan operasi')
 			}
 		}
 		else{
-			console.log('masukkan angka terlebih dahulu untuk melakukan operasi')
+			onClearButtonClick();
 		}
 	}
 
 	function onEqualButtonClick(event) {
-		if(temp !== ''){
-			if(numberOfMissingOpeningBrackets > 0 ){
-				setOperands((prev)=>{
-					let str = ''
-					for (let index = 0; index < numberOfMissingOpeningBrackets; index++) {
-						str = str + ')';
-						setNumberOfMissingOpeningBrackets(prev=>prev-1)
-					}
-					console.log(str);
-					return [...prev,temp+str]
-				});
+		if(!containsEqualSign){
+			if(temp !== ''){
+				if(numberOfMissingOpeningBrackets > 0 ){
+					setOperands((prev)=>{
+						let str = ''
+						for (let index = 0; index < numberOfMissingOpeningBrackets; index++) {
+							str = str + ')';
+							setNumberOfMissingOpeningBrackets(prev=>prev-1)
+						}
+						console.log(str);
+						// setHasil(()=>temp+str);
+						return [...prev,temp+str]
+					});
+				}
+				else{
+					// if(containsPercentSign){
+					// 	setHasil(()=>operands[operands.lenght-1]);
+					// }
+					// else{
+					// 	setOperands((prev)=>[...prev,temp]);
+					// 	// setOutput(prev => prev + event.target.value);
+					// }
+	
+					setOperands((prev)=>[...prev,temp]);
+				}
+				
+				setTemp('');
+				setContainsEqualSign(()=>true)
 			}
 			else{
-				setOperands((prev)=>[...prev,temp]);
-				// setOutput(prev => prev + event.target.value);
-
-	
+				alert('input anda salah! , operand harus 1 lebih banyak dari operator');
 			}
-			
-			setTemp('');
-			setContainsEqualSign(()=>true)
 		}
 		else{
-			alert('input anda salah! , operand harus 1 lebih banyak dari operator');
+			onClearButtonClick();
 		}
 	}
 
@@ -101,27 +128,33 @@ function App() {
 		setNumberOfOperators(0);
 		setTemp(()=>'');
 		setLastElement(()=>'');
-		setNumberOfMissingOpeningBrackets(()=>0)
+		setNumberOfMissingOpeningBrackets(()=>0);
+		setContainsPercentSign(false);
 	}
 
 	function onMinButtonClick() {
-		if(!temp.includes('-')){
-			if(temp.length === 0){
-				setTemp(()=> '(-)');
-			}
-			else{
-				if(temp.includes('(')){
-					setTemp((prev)=> {
-						let arr = prev.split('');
-						arr.splice(1,0,'(-)')
-						return arr.join('');
-					});
+		if(!containsEqualSign){
+			if(!temp.includes('-')){
+				if(temp.length === 0){
+					setTemp(()=> '(-)');
 				}
 				else{
-					setTemp((prev)=> ['(','-',...prev,')'].join(''));
+					if(temp.includes('(')){
+						setTemp((prev)=> {
+							let arr = prev.split('');
+							arr.splice(1,0,'(-)')
+							return arr.join('');
+						});
+					}
+					else{
+						setTemp((prev)=> ['(','-',...prev,')'].join(''));
+					}
+					
 				}
-				
 			}
+		}
+		else{
+			onClearButtonClick();
 		}
 	}
 
@@ -151,84 +184,130 @@ function App() {
 	}
 
 	function onDotButtonClick(event) {
-		if(!temp.includes('.')){
-			if(temp === ''){
-				setTemp(()=>'0.')
-			}
-			else{
-				if(temp.includes('-') && !/\d/.test(temp)){
-					setTemp((prev)=>{
-						let str = prev.split('')
-
-						str.splice(prev.indexOf('-')+1,0,'0.')
-
-						return str.join('')
-					})
-				}
-				if(temp.includes('-') && /\d/.test(temp)){
-					setTemp((prev)=>{
-						let str = prev.split('')
-
-						str.splice(prev.indexOf(')'),0,'.')
-
-						return str.join('')
-					})
+		if(!containsEqualSign){
+			if(!temp.includes('.')){
+				if(temp === ''){
+					setTemp(()=>'0.')
 				}
 				else{
-					setTemp((prev) => prev + event.target.value)
+					if(temp.includes('-') && !/\d/.test(temp)){
+						setTemp((prev)=>{
+							let str = prev.split('')
+	
+							str.splice(prev.indexOf('-')+1,0,'0.')
+	
+							return str.join('')
+						})
+					}
+					if(temp.includes('-') && /\d/.test(temp)){
+						setTemp((prev)=>{
+							let str = prev.split('')
+	
+							str.splice(prev.indexOf(')'),0,'.')
+	
+							return str.join('')
+						})
+					}
+					else{
+						setTemp((prev) => prev + event.target.value)
+					}
 				}
 			}
+		}
+		else{
+			onClearButtonClick();
 		}
 	}
 
 	function onDelButtonClick() {
-		setTemp((prev)=>prev.substring(0, prev.length - 1));
+		if(!containsEqualSign){
+			if(temp[temp.length-1]==='('){
+				setNumberOfMissingOpeningBrackets(prev=>prev-1);
+			}
+	
+			if(temp === ''){
+				if(operators.length !== 0){
+					setLastElement(()=>operators[operators.length-1])
+				}
+				else{
+					setLastElement(()=>'');
+				}
+			}
+	
+			if(temp !== ''){
+				setTemp((prev)=>prev.substring(0, prev.length - 1));
+				console.log('halo');
+				setLastElement((prev)=>{
+					let qqq = temp.split('');
+					let val = qqq.splice((qqq.length - 2),1,'')[0];
+					if(qqq.length === 1){
+						return '';
+					}
+					else{
+						return val;
+					}
+				})
+			}
+		}
+		else{
+			onClearButtonClick();
+		}
 	}
 
 	function onParenthesesButtonClick(event) {
-		// if(typeof parseInt(lastElement) === "number" && containsOpeningBracket){
+		if(!containsEqualSign){
+			// if(typeof parseInt(lastElement) === "number" && containsOpeningBracket){
 			// 	setTemp(prev => prev + ')')
 			// }
 			// else{
 			// 	setTemp(prev => '(' + prev);
 			// 	setContainsOpeningBracket(()=>true)
 			// }
-		if(temp === ''){
-			setTemp(prev => '(' + prev);
-			setNumberOfMissingOpeningBrackets(prev=>prev+1)
-			setLastElement(()=>event.target.value);
+			if(temp === ''){
+				setTemp(prev => '(' + prev);
+				setNumberOfMissingOpeningBrackets(prev=>prev+1)
+				setLastElement(()=>event.target.value);
+			}
+			else{
+				if(numberOfMissingOpeningBrackets > 0 && lastElement !== '()'){
+					setTemp(prev => prev + ')')
+					setNumberOfMissingOpeningBrackets(prev=>prev-1)
+					setLastElement(()=>event.target.value);
+				}
+
+				else if(/\d/.test(lastElement)){
+					setOperands((prev)=>[...prev,temp]);
+					setOperators((prev)=>[...prev,'*']);
+					setNumberOfOperators((prev)=>prev+1);
+					setTemp('(');
+					setNumberOfMissingOpeningBrackets(prev=>prev+1);
+					setLastElement(()=>event.target.value);
+				}
+
+				else{
+					console.log('masukkan operand terlebih dahulu sebelum menutup kurung');
+				}
+			}
 		}
 		else{
-			if(numberOfMissingOpeningBrackets > 0 && lastElement !== '()'){
-				setTemp(prev => prev + ')')
-				setNumberOfMissingOpeningBrackets(prev=>prev-1)
-				setLastElement(()=>event.target.value);
-			}
-
-			else if(/\d/.test(lastElement)){
-				setOperands((prev)=>[...prev,lastElement]);
-				setOperators((prev)=>[...prev,'*']);
-				setNumberOfOperators((prev)=>prev+1);
-				setTemp('(');
-				setNumberOfMissingOpeningBrackets(prev=>prev+1);
-				setLastElement(()=>event.target.value);
-			}
-
-			else{
-				console.log('masukkan operand terlebih dahulu sebelum menutup kurung');
-			}
+			onClearButtonClick();
 		}
 	}
 
-	// function onPercentButtonClick() {
-	// 	if(temp !== ''){
-	// 		setTemp((prev)=>prev+'%');
-	// 		setOperands((prev) => prev * 0.01 );
-	// 	}
-	// 	else{
-	// 		console.log('invalid input, masukkan angka terlebih dahulu kemudian diikuti tanda persen')
-	// 	}
-	// }
+	function onPercentButtonClick() {
+		if(!containsEqualSign){
+			if(temp !== '' && /\d/.test(temp)){
+				setTemp(() => (parseInt(temp) * 0.01).toString() );
+				setContainsPercentSign(true);
+			}
+			else{
+				console.log('invalid input, masukkan angka terlebih dahulu kemudian diikuti tanda persen')
+			}
+		}
+		else{
+			onClearButtonClick();
+		}
+	}
 
 	useEffect(()=>{
 		if(lastElement !== '()'){
@@ -265,8 +344,8 @@ function App() {
 	return (
 		<div className="App">
       		<div className="output">
-				<h1>calculator</h1>
-				<h2>{output} {temp}</h2>
+				<h1>Calculator</h1>
+				<h2>{output}{temp}</h2>
 				<h3> = {hasil}</h3>
 			</div>
 			<div className="button-group">
@@ -284,7 +363,7 @@ function App() {
 				<button onClick={onOperatorButtonClick} value="-">-</button>
 				<button onClick={onOperatorButtonClick} value="*">*</button>
 				<button onClick={onOperatorButtonClick} value="/">/</button>
-				{/* <button onClick={onPercentButtonClick}>%</button> */}
+				<button onClick={onPercentButtonClick}>%</button>
 				<button onClick={onMinButtonClick} value="">+/-</button>
 				<button onClick={onDotButtonClick} value=".">.</button>
 				<button onClick={onParenthesesButtonClick} value="()">()</button>
@@ -299,7 +378,7 @@ function App() {
 export default App;
 
 // todo
-// 1. fungsionalitas persen
+// 1. fungsionalitas persen (done)
 // 2. fungsionalitas parentheses (done)
 // 3. 12+= got error (done)
 // 4. perbaiki output (partially done)
@@ -310,6 +389,10 @@ export default App;
 // 7. nilai state setNumberOfMissingOpeningBrackets tidak akurat pada saat
 //    menambahkan tutup kurung secara otomatis
 // 8. fungsionalitas operand diikuti buka kurung (done)
+// 9. del button functionality (done)
+// 10.add history
+
+// ui idea -> use linear color bg , button bg white transparent (0.3);
 
 
 // Check if an array is empty or not in JavaScript :
